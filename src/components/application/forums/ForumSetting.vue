@@ -82,23 +82,45 @@
       <template v-slot:color>
         <div class="grid grid-cols-6">
           <div class="modal-label">顏色</div>
-          <input
-            class="modal-input"
-            placeholder="顏色"
+          <div 
+            class="col-span-5 grid grid-cols-5 px-2 py-1 border rounded-xl bg-gray-tab text-center"
             :class="inputIsNull.color ? 'border-red-500' : ''"
-            v-model="state.updateData.color"
-          />
+          >
+              <div class="col-span-4">
+                <input
+                    class="modal-input border-transparent"
+                    type="text"
+                    v-model="state.updateData.color"
+                />
+              </div>
+              <div class="text-right col-span-1">
+                <input
+                    class="modal-input border-transparent"
+                    type="color"
+                    v-model="state.updateData.color"
+                />
+              </div>
+          </div>
         </div>
       </template>
       <template v-slot:icon>
         <div class="grid grid-cols-6">
           <div class="modal-label">icon</div>
-          <input
-            class="modal-input"
-            placeholder="icon"
+          <div 
+            class="col-span-5 grid grid-cols-5 px-2 py-1 border rounded-xl bg-gray-tab text-center"
             :class="inputIsNull.icon ? 'border-red-500' : ''"
-            v-model="state.updateData.icon"
-          />
+          >
+              <div class="col-span-4">
+                <input
+                    class="modal-input border-transparent"
+                    type="text"
+                    v-model="state.updateData.icon"
+                />
+              </div>
+              <div class="col-span-1 p-1">
+                <a class="border-2 rounded-3xl px-2 py-1" href="https://fontawesome.com/v5.15/icons?d=gallery&p=2" target="_blank">icon選單</a>
+              </div>
+          </div>
         </div>
       </template>
       <template v-slot:data>
@@ -111,7 +133,7 @@
       </template>
       <template v-slot:submit>
         <div class="text-right px-3">
-          <button class="modal-btn modal-green-btn" @click="updateData()">
+          <button class="modal-btn modal-green-btn" @click="createData()">
             新增
           </button>
         </div>
@@ -125,7 +147,7 @@
       </template>
       <template v-slot:delete>
         <div class="text-right px-3">
-          <button class="modal-btn modal-red-btn" @click="updateData()">
+          <button class="modal-btn modal-red-btn" @click="deleteData()">
             刪除
           </button>
         </div>
@@ -169,6 +191,7 @@ import { ForumSettingTable } from "@/config/application/Table";
 import { ForumParentUpdataLabel, ForumChildUpdataLabel, ForumCreateLabel, ForumDeleteLabel } from "@/config/application/Modal";
 import { ForumEnabledSelect } from "@/config/application/Select";
 import { Select } from "@/model/list";
+import { CheckColor, CheckData } from "@/library/application/CheckData"
 // import { PageData } from "@/library/application/PageData";
 export default defineComponent({
   setup() {
@@ -205,10 +228,11 @@ export default defineComponent({
           }
         });
       });
-      getChildForum()
+      store.commit("Render/UpdateLoading", false);
     };
 
     const getChildForum = async () => {
+      store.commit("Render/UpdateLoading", true);
       await GetForumList({}).then((res: any) => {
         res.forEach((item: any) => {
           if (item.is_Cat == 0) {
@@ -227,7 +251,7 @@ export default defineComponent({
       if (status) {
         modalTitle.value = title;
         if (title == "編輯父討論區") {
-          state.updateData = data;
+          state.updateData = JSON.parse(JSON.stringify(data));
           ForumEnabledSelect.forEach((item: any) => {
             if (item.value == data.expert_Only) {
               enabledSelected.value = item
@@ -235,7 +259,7 @@ export default defineComponent({
           })
           modalLabel.value = ForumParentUpdataLabel
         } else if (title == "編輯子討論區") {
-          state.updateData = data;
+          state.updateData = JSON.parse(JSON.stringify(data));
           ForumEnabledSelect.forEach((item: any) => {
             if (item.value == data.expert_Only) {
               enabledSelected.value = item
@@ -255,19 +279,44 @@ export default defineComponent({
         }
       } else {
           state.updateData = {} as any
+          Object.keys(inputIsNull).forEach((key: any) => {
+              inputIsNull[key as keyof typeof inputIsNull] = false
+          })
       }
       modalStatus.value = status;
     };
     const setParentForum = (forum: any) => {
-        console.log(forum)
+        state.updateData.parentID = forum.value
     }
     const setEnabled = (enabled: any) => {
-        console.log(enabled)
+        state.updateData.status = enabled.value
     }
-    // const checkData = () => {
-    //   let notNull = true;
-    //   return notNull;
-    // };
+    const createData = () => {
+        const notNull = checkData()
+        console.log(notNull)
+        console.log(state.updateData)
+    }
+    const updateData = () => {
+        const notNull = checkData()
+        console.log(notNull)
+        console.log(state.updateData)
+    }
+    const deleteData = () => {
+        console.log(state.updateData)
+    }
+    const checkData = () => {
+        let notNull = true
+        inputIsNull.color = !CheckColor(state.updateData.color)
+        inputIsNull.title = !CheckData(state.updateData.title)
+        inputIsNull.icon = !CheckData(state.updateData.icon)
+        Object.keys(inputIsNull).forEach((key: any) => {
+            if (inputIsNull[key as keyof typeof inputIsNull]){
+                notNull = false;
+            }
+        })
+        return notNull;
+    }
+
     // const controlHint = (message: string, label: string, bgcolor: string) => {
     //   //開關 設定提示視窗
     //   store.commit("Render/UpdateLoading", false);
@@ -286,6 +335,7 @@ export default defineComponent({
     // };
 
     getParentForum();
+    getChildForum();
     return {
       childShow,
       state,
@@ -303,6 +353,9 @@ export default defineComponent({
       controlModal,
       setParentForum,
       setEnabled,
+      updateData,
+      createData,
+      deleteData,
     };
   },
 });

@@ -20,6 +20,9 @@
         .rotate-Y-360{
             transform:rotateY(360deg);
         }
+        .rotate-Z-45{
+            transform:rotateZ(45deg);
+        }
         .login-btn-drop-shadow :before{
             content: "";
             z-index: -1;

@@ -7,6 +7,8 @@ import Listbox from './global/Listbox.vue';
 import Modal from './global/Modal.vue';
 import Hint from './global/Hint.vue';
 import Loading from './global/Loading.vue';
+import Tag from './global/Tag.vue';
+import Collapse from './global/Collapse.vue'
 
 export default {
     Header,
@@ -18,4 +20,6 @@ export default {
     Modal,
     Hint,
     Loading,
+    Tag,
+    Collapse,
 }

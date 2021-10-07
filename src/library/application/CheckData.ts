@@ -24,3 +24,13 @@ export const CheckPassword = (password: string, checkPassword: string, admin: bo
     }
     return { status: true, hint: hintData }
 }
+
+export const CheckColor = (color: string) => {
+    const colorReg = /#([0-9]|[a-fA-F])+/g
+    const result = color.match(colorReg)
+    if (result == null || result[0].length != 7 || color.length != 7) {
+        return false;
+    } else {
+        return true;
+    }
+}
