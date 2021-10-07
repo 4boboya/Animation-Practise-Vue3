@@ -1,0 +1,4 @@
+NODE_ENV = 'production'
+VUE_APP_BACKEND_SERVICE=http://192.168.55.61/pricebackendservice/
+VUE_APP_TITLE = '前端站台後臺工具'
+VUE_APP_IMG_URL = 'http://192.168.55.63/downloads/'

@@ -1,0 +1,38 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities{
+    @variants responsive,hover{
+        .rotate-Y-0{
+            transform:rotateY(0deg);
+        }
+        .rotate-Y-90{
+            transform:rotateY(90deg);
+        }
+        .rotate-Y-180{
+            transform:rotateY(180deg);
+        }
+        .rotate-Y-270{
+            transform:rotateY(270deg);
+        }
+        .rotate-Y-360{
+            transform:rotateY(360deg);
+        }
+        .login-btn-drop-shadow :before{
+            content: "";
+            z-index: -1;
+            position: absolute;
+            top: -24px;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: radial-gradient(circle at top left, #fd00da, #19d7f8);
+            transform: translateY(10px) scale(0.75);
+            filter: blur(20px);
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+    }
+}
