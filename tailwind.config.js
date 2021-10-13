@@ -9,6 +9,8 @@ module.exports = {
     './src/components/global/Loading.vue',
     './src/components/global/Modal.vue',
     './src/components/global/Switch.vue',
+    './src/components/global/Tag.vue',
+    './src/components/global/Collapse.vue',
     './src/components/application/forums/TopicAudit.vue',
     './src/components/application/forums/TopicSetting.vue',
     './src/components/application/forums/ForumSetting.vue',
@@ -79,6 +81,7 @@ module.exports = {
       },
       inset: {
         '3px': '3px',
+        'm3.5px':'-3.5px',
         '5px': '5px',
         '12px': '12px',
         '80px': '80px',

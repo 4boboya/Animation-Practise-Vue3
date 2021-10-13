@@ -29,6 +29,47 @@
         <button class="ml-1" @click="addTag()">確定</button>
       </template>
     </Tag>
+    <div class="grid grid-cols-3 gap-4" style="margin-bottom:20px">
+      <div>
+        <span v-tooltip.topleft="'123'" class="bg-gray-300">topleft</span>
+      </div>
+      <div>
+        <span v-tooltip.top="'123'" class="bg-gray-300">top</span>
+      </div>
+      <div>
+        <span v-tooltip.topright="'123'" class="bg-gray-300">topright</span>
+      </div>
+      <div>
+        <span v-tooltip.lefttop="'123'" class="bg-gray-300">lefttop</span>
+      </div>
+      <div></div>
+      <div>
+        <span v-tooltip.righttop="'123'" class="bg-gray-300">righttop</span>
+      </div>
+      <div>
+        <span v-tooltip.left="'123'" class="bg-gray-300">left</span>
+      </div>
+      <div></div>
+      <div>
+        <span v-tooltip.right="'123'" class="bg-gray-300">right</span>
+      </div>
+      <div>
+        <span v-tooltip.leftbottom="'123'" class="bg-gray-300">leftbottom</span>
+      </div>
+      <div></div>
+      <div>
+        <span v-tooltip.rightbottom="'123'" class="bg-gray-300">rightbottom</span>
+      </div>
+      <div>
+        <span v-tooltip.bottomleft="'123'" class="bg-gray-300">bottomleft</span>
+      </div>
+      <div>
+        <span v-tooltip.bottom="'123'" class="bg-gray-300">bottom</span>
+      </div>
+      <div>
+        <span v-tooltip.bottomright="'123'" class="bg-gray-300">bottomright</span>
+      </div>
+    </div>
     <button v-collapse="'col1'" class="bg-gray-400 text-white w-full">Turn on full screen animation</button>
     <div id="col1" class="bg-blue-400 collapse-cont">
         <button class="open-btn" @click="openColl = true,collCount++">open</button>
@@ -48,11 +89,12 @@
           <div class="div_3 spin_div"></div>
         </div>
     </div>
-    <button v-collapse="'col3'" class="bg-gray-600 text-white w-full" style="width:100%;">before after</button>
-    <div id="col3" class="bg-blue-600 collapse-cont">
+    <button v-collapse="'col3'" class="bg-gray-600 text-white w-full" style="width:100%;">before after random color</button>
+    <div id="col3" class="before-after-bgcolor collapse-cont">
         <div class="card">
           <div class="back"></div>
         </div>
+        <button @click="changeColor()">change</button>
     </div>
     <button v-collapse="'col4'" class="bg-gray-700 text-white w-full" style="width:100%;">animation input</button>
     <div id="col4" class="bg-blue-700 collapse-cont">
@@ -84,6 +126,17 @@
         <button class="ctrl-cude" @click="cube = !cube">change</button>
       </div>
     </div>
+    <button v-collapse="'col6'" class="bg-gray-900 text-white w-full" style="width:100%;">canvas drawing test</button>
+    <div id="col6" class="bg-blue-900 collapse-cont">
+      <div class="h-5 w-full">
+        <button class="bg-gray-300" @click="rubberStatus = false">Pen</button>
+        <button class="bg-gray-300" @click="rubberStatus = true">Rubber</button>
+        <input v-model="lineSize" type="number" placeholder="line size">
+        <input v-model="lineColor" type="color" placeholder="color">
+        <button class="bg-gray-300" @click="claerCanvas">Clear</button>
+      </div>
+      <canvas :ref="(el) => { canvasRef = el }" @mousemove="draw" @mousedown="beginDrawing" @mouseup="stopDrawing"/>
+    </div>
     <div v-draggable class="relative" style="height: 120px; z-index:9999">
       <span class="spin_div_cont_2"> 我可以移動 </span>
       <div class="div_1 spin_div" style="border-color: #313a54"></div>
@@ -93,7 +146,16 @@
   </div>
 </template>
 
+<style>
+:root {
+  --before-color : #2563eb;
+  --card-color: #154ecb;
+}
+</style>
 <style scoped>
+.before-after-bgcolor {
+  background-color: var(--before-color);
+}
 .box-side {
   perspective-origin: 50% 145px;
   perspective: 2000px;
@@ -293,7 +355,7 @@
   margin-inline: auto;
   height: 150px;
   width: 120px;
-  background-color: #154ecb;
+  background-color: var(--card-color);
   border-bottom-left-radius: 50%;
   border-bottom-right-radius: 50%;
   border-top-left-radius: 10%;
@@ -316,7 +378,7 @@
   width: 40px;
   height: 40px;
   position: relative;
-  background-color: #2563eb;
+  background-color: var(--before-color);
   border-bottom-left-radius: 80%;
   border-bottom-right-radius: 80%;
   left: 36%;
@@ -328,7 +390,7 @@
   width: 15px;
   height: 15px;
   border-radius: 0% 100% 100% 0% / 0% 100% 0% 100%;
-  box-shadow: 15px -15px 0px 15px #2563eb;
+  box-shadow: 15px -15px 0px 15px var(--before-color);
   background-color: transparent;
 }
 .back::before {
@@ -338,7 +400,7 @@
   width: 15px;
   height: 15px;
   border-radius: 100% 0% 0% 100% / 100% 0% 100% 0%;
-  box-shadow: -15px -15px 0px 15px #2563eb;
+  box-shadow: -15px -15px 0px 15px var(--before-color);
   background-color: transparent;
 }
 .input-box {
@@ -456,7 +518,7 @@
 </style>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from "vue";
+import { defineComponent, onMounted, reactive, ref } from "vue";
 import { TagSelect } from "@/model/tag";
 export default defineComponent({
   setup() {
@@ -467,6 +529,15 @@ export default defineComponent({
     const openColl = ref<boolean>(false);
     const collCount = ref<number>(0);
     const cube = ref<boolean>(false);
+    const colorArray = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f']
+    const canvasRef = ref<HTMLCanvasElement>();
+    const ctx = ref<CanvasRenderingContext2D>();
+    const drawing = ref<boolean>(false);
+    const mouseX = ref<number>(0);
+    const mouseY = ref<number>(0);
+    const lineSize = ref<number>(6);
+    const lineColor = ref<string>("#000000");
+    const rubberStatus = ref<boolean>(false);
 
     const tagSelect = reactive([
       { key: "stock" },
@@ -492,6 +563,55 @@ export default defineComponent({
       }
     };
 
+    const changeColor = () => {
+      let color = '#'
+      for (let j=0 ;j<2 ;j++) {
+        for (let i = 0 ; i< 6 ; i++){
+          const index = Math.floor((Math.random()*colorArray.length))
+          color += colorArray[index]
+        }
+        if (j == 0) document.documentElement.style.setProperty('--before-color',color)
+        else document.documentElement.style.setProperty('--card-color',color)
+        color = '#'
+      }
+    }
+
+    const setCanvas = () => {
+      const canvas = canvasRef.value as HTMLCanvasElement
+      canvas.width = canvas.parentElement?.offsetWidth as number
+      canvas.height = 500
+      ctx.value = canvas.getContext('2d') as CanvasRenderingContext2D
+    }
+    const draw = (e:MouseEvent) => {
+      if(drawing.value) {
+        ctx.value?.beginPath();
+        ctx.value!.strokeStyle = rubberStatus.value ? '#1E3A8A' : lineColor.value;
+        ctx.value!.lineWidth = lineSize.value;
+        ctx.value?.moveTo(mouseX.value, mouseY.value);
+        ctx.value?.lineTo(e.offsetX, e.offsetY);
+        ctx.value?.stroke();
+        ctx.value?.closePath();
+        mouseX.value = e.offsetX;
+        mouseY.value = e.offsetY;
+      }
+    }
+    const beginDrawing = (e:MouseEvent) => {
+      mouseX.value = e.offsetX;
+      mouseY.value = e.offsetY;
+      drawing.value = true;
+    }
+    const stopDrawing = () => {
+      drawing.value = false;
+    }
+
+    const claerCanvas = () => {
+      canvasRef.value!.height = canvasRef.value!.height
+    }
+
+    onMounted(() => {
+      setCanvas()
+    })
+
     return {
       tagSelect,
       stock,
@@ -501,8 +621,17 @@ export default defineComponent({
       openColl,
       collCount,
       cube,
+      canvasRef,
+      lineSize,
+      lineColor,
+      rubberStatus,
+      draw,
+      beginDrawing,
+      stopDrawing,
       addTag,
       controlPanel,
+      changeColor,
+      claerCanvas,
     };
   },
 });

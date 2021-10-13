@@ -1,0 +1,307 @@
+[tooltip] {
+    & > * {
+        display: inline-block;
+    }
+    position: relative;
+    &::after, &::before {
+        position: absolute;
+        opacity: 0;
+        display: none;
+    }
+    &::after {
+        position: absolute;
+        content: attr(tooltip);
+        background-color: #495057;
+        color: #dedede;
+        line-height: 1.2;
+        min-width: 48px;
+        font-size: 14px;
+        padding: 2px 4px;
+        border-radius: 5px;
+        white-space:nowrap;
+    }
+    &::before {
+        content: "";
+        position: absolute;
+        border-style: solid solid solid solid;
+    }
+    &:hover::after, &:hover::before{
+        display: block;
+    }
+    &[position^="top"] {
+        &::after {
+            top: -16px;
+        }
+        &::before {
+            top: -5px;
+            left: 50%;
+            transform: translate(-50%, -195%); // X, Y
+            border-width: 6px 3px 0px 3px;
+            border-color: #495057 transparent transparent transparent;
+        }
+        &[event~="focus"]:focus::before,
+        &[event~="hover"]:hover::before,
+        &[event~="focushover"]:hover::before {
+            animation: topAnimation 300ms ease-out forwards;
+        }
+    }
+    &[position~="top"] {
+        &::after {
+            left: 50%;
+            transform: translate(-50%, -90%);
+        }
+        &[event~="focus"]:focus::after,
+        &[event~="hover"]:hover::after,
+        &[event~="focushover"]:hover::after {
+            animation: topAnimation 300ms ease-out forwards;
+        }
+    }
+    &[position~="topright"] {
+        &::after {
+            left: calc(50% - 10px);
+            transform: translate(0%, -90%);
+        }
+        &[event~="focus"]:focus::after,
+        &[event~="hover"]:hover::after,
+        &[event~="focushover"]:hover::after {
+            animation: topOffsetAnimation 300ms ease-out forwards;
+        }
+    }
+    &[position~="topleft"] {
+        &::after {
+            right: calc(50% - 10px);
+            transform: translate(0%, -90%);
+        }
+        &[event~="focus"]:focus::after,
+        &[event~="hover"]:hover::after,
+        &[event~="focushover"]:hover::after {
+            animation: topOffsetAnimation 300ms ease-out forwards;
+        }
+    }
+    @keyframes topAnimation {
+        to {
+            opacity: 0.9;
+            transform: translate(-50%, -50%)
+        }
+    }
+    @keyframes topOffsetAnimation {
+        to {
+            opacity: 0.9;
+            transform: translate(0%, -50%)
+        }
+    }
+    &[position^="bottom"] {
+        &::after {
+            bottom: -16px;
+        }
+        &::before {
+            bottom: -5px;
+            left: 50%;
+            transform: translate(-50%, 195%);
+            border-width: 0px 3px 6px 3px;
+            border-color:  transparent transparent #495057 transparent;
+        }
+        &[event~="focus"]:focus::before,
+        &[event~="hover"]:hover::before,
+        &[event~="focushover"]:hover::before {
+            animation: bottomAnimation 300ms ease-out forwards;
+        }
+    }
+    &[position~="bottom"] {
+        &::after {
+            left: 50%;
+            transform: translate(-50%, 90%);
+        }
+        &[event~="focus"]:focus::after,
+        &[event~="hover"]:hover::after,
+        &[event~="focushover"]:hover::after {
+            animation: bottomAnimation 300ms ease-out forwards;
+        }
+    }
+    &[position~="bottomright"] {
+        &::after {
+            left: calc(50% - 10px);
+            transform: translate(0%, 90%);
+        }
+        &[event~="focus"]:focus::after,
+        &[event~="hover"]:hover::after,
+        &[event~="focushover"]:hover::after {
+            animation: bottomOffsetAnimation 300ms ease-out forwards;
+        }
+    }
+    &[position~="bottomleft"] {
+        &::after {
+            right: calc(50% - 10px);
+            transform: translate(0%, 90%);
+        }
+        &[event~="focus"]:focus::after,
+        &[event~="hover"]:hover::after,
+        &[event~="focushover"]:hover::after {
+            animation: bottomOffsetAnimation 300ms ease-out forwards;
+        }
+    }
+    @keyframes bottomAnimation {
+        to {
+            opacity: 0.9;
+            transform: translate(-50%, 50%)
+        }
+    }
+    @keyframes bottomOffsetAnimation {
+        to {
+            opacity: 0.9;
+            transform: translate(0%, 50%)
+        }
+    }
+    &[position^="right"] {
+        &::after {
+            left: calc(100% + 12px);
+        }
+        &::before {
+            left: calc(100% + 4px);
+            top: 50%;
+            border-width: 3px 6px 3px 0px;
+            transform: translate(195%, -50%);
+            border-color:  transparent #495057 transparent  transparent;
+        }
+        &[event~="focus"]:focus::after,
+        &[event~="hover"]:hover::after,
+        &[event~="focushover"]:hover::after,
+        &[event~="focushover"]:focus::after,
+        &[event~="focus"]:focus::before,
+        &[event~="hover"]:hover::before,
+        &[event~="focushover"]:hover::before,
+        &[event~="focushover"]:focus::before {
+            animation: rightAnimation 300ms ease-out forwards;
+        }
+    }
+    &[position~="right"] {
+        &::after {
+            top: 50%;
+            transform: translate(20%, -50%);
+        }
+        &[event~="focus"]:focus::after,
+        &[event~="hover"]:hover::after,
+        &[event~="focushover"]:hover::after,
+        &[event~="focushover"]:focus::after {
+            animation: rightAfterCenterAnimation 300ms ease-out forwards;
+        }
+    }
+    &[position~="righttop"] {
+        &::after {
+            bottom: calc(50% - 7px);
+            transform: translate(20%, 0%);
+        }
+        &[event~="focus"]:focus::after,
+        &[event~="hover"]:hover::after,
+        &[event~="focushover"]:hover::after,
+        &[event~="focushover"]:focus::after {
+            animation: rightOffserAnimation 300ms ease-out forwards;
+        }
+    }
+    &[position~="rightbottom"] {
+        &::after {
+            top: calc(50% - 7px);
+            transform: translate(20%, 0%);
+        }
+        &[event~="focus"]:focus::after,
+        &[event~="hover"]:hover::after,
+        &[event~="focushover"]:hover::after,
+        &[event~="focushover"]:focus::after {
+            animation: rightOffserAnimation 300ms ease-out forwards;
+        }
+    }
+    @keyframes rightAnimation {
+        to {
+            opacity: 0.9;
+            transform: translate(50%, -50%);
+        }
+    }
+    @keyframes rightAfterCenterAnimation {
+        to {
+            opacity: 0.9;
+            transform: translate(0%, -50%);
+        }
+    }
+    @keyframes rightOffserAnimation {
+        to {
+            opacity: 0.9;
+            transform: translate(0%, 0%);
+        }
+    }
+    &[position^="left"] {
+        &::after {
+            right: calc(100% + 12px);
+        }
+        &::before {
+            right: calc(100% + 4px);
+            top: 50%;
+            border-width: 3px 0px 3px 6px;
+            transform: translate(-195%, -50%);
+            border-color:  transparent transparent transparent #495057;
+        }
+        &[event~="focus"]:focus::after,
+        &[event~="hover"]:hover::after,
+        &[event~="focushover"]:hover::after,
+        &[event~="focushover"]:focus::after,
+        &[event~="focus"]:focus::before,
+        &[event~="hover"]:hover::before,
+        &[event~="focushover"]:hover::before,
+        &[event~="focushover"]:focus::before {
+            animation: leftAnimation 300ms ease-out forwards;
+        }
+    }
+    &[position~="left"] {
+        &::after {
+            top: 50%;
+            transform: translate(-20%, -50%);
+        }
+        &[event~="focus"]:focus::after,
+        &[event~="hover"]:hover::after,
+        &[event~="focushover"]:hover::after,
+        &[event~="focushover"]:focus::after {
+            animation: leftAfterCenterAnimation 300ms ease-out forwards;
+        }
+    }
+    &[position~="lefttop"] {
+        &::after {
+            bottom: calc(50% - 7px);
+            transform: translate(-20%, 0%);
+        }
+        &[event~="focus"]:focus::after,
+        &[event~="hover"]:hover::after,
+        &[event~="focushover"]:hover::after,
+        &[event~="focushover"]:focus::after {
+            animation: leftOffserAnimation 300ms ease-out forwards;
+        }
+    }
+    &[position~="leftbottom"] {
+        &::after {
+            top: calc(50% - 7px);
+            transform: translate(-20%, 0%);
+        }
+        &[event~="focus"]:focus::after,
+        &[event~="hover"]:hover::after,
+        &[event~="focushover"]:hover::after,
+        &[event~="focushover"]:focus::after {
+            animation: leftOffserAnimation 300ms ease-out forwards;
+        }
+    }
+    @keyframes leftAnimation {
+        to {
+            opacity: 0.9;
+            transform: translate(-50%, -50%);
+        }
+    }
+    @keyframes leftAfterCenterAnimation {
+        to {
+            opacity: 0.9;
+            transform: translate(0%, -50%);
+        }
+    }
+    @keyframes leftOffserAnimation {
+        to {
+            opacity: 0.9;
+            transform: translate(0%, 0%);
+        }
+    }
+}
