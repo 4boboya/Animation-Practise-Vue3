@@ -137,6 +137,14 @@
       </div>
       <canvas :ref="(el) => { canvasRef = el }" @mousemove="draw" @mousedown="beginDrawing" @mouseup="stopDrawing"/>
     </div>
+    <button v-collapse="'col7'" class="bg-gray-800 text-white w-full" style="width:100%;">toggle btn open</button>
+    <div id="col7" class="bg-blue-800 collapse-cont" :class="toggleStatus ? 'toggle-active' : ''" @click="toggleStatus = !toggleStatus">
+      <div class="toggle-btn">
+        <span/>
+        <span/>
+        <span/>
+      </div>
+    </div>
     <div v-draggable class="relative" style="height: 120px; z-index:9999">
       <span class="spin_div_cont_2"> 我可以移動 </span>
       <div class="div_1 spin_div" style="border-color: #313a54"></div>
@@ -150,9 +158,64 @@
 :root {
   --before-color : #2563eb;
   --card-color: #154ecb;
+  --err-color: #ee1f1f
 }
 </style>
 <style scoped>
+.toggle-btn {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  border-radius: 10%;
+  background-color:#dedede;
+  margin: 10px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  overflow: hidden;
+}
+.toggle-btn span{
+  position: absolute;
+  border-radius: 10px;
+  background-color: #6d32db
+}
+.toggle-btn span:nth-child(1){
+  transform: translateY(-35px);
+  width: 70px;
+  height: 20px;
+  left: 25px;
+  transition: all 0.25s ease-in-out;
+  transition-delay: 0.2s;
+}
+.toggle-btn span:nth-child(2){
+  width: 100px;
+  height: 20px;
+  transition: all 0.25s ease-in-out;
+}
+.toggle-btn span:nth-child(3){
+  transform: translateY(35px);
+  width: 50px;
+  height: 20px;
+  left: 25px;
+  transition: all 0.25s ease-in-out;
+  transition-delay: 0.2s;
+}
+.toggle-active span:nth-child(1){
+  transform: translateY(0px) rotateZ(45deg);
+  width: 108px;
+  left: 22px;
+  background-color: var(--err-color)
+}
+.toggle-active span:nth-child(2){
+  transform: translateX(150px);
+}
+.toggle-active span:nth-child(3){
+  transform: translateY(0px) rotateZ(-45deg);
+  width: 108px;  
+  left: 22px;  
+  background-color: var(--err-color)
+}
 .before-after-bgcolor {
   background-color: var(--before-color);
 }
@@ -538,6 +601,7 @@ export default defineComponent({
     const lineSize = ref<number>(6);
     const lineColor = ref<string>("#000000");
     const rubberStatus = ref<boolean>(false);
+    const toggleStatus = ref<boolean>(false);
 
     const tagSelect = reactive([
       { key: "stock" },
@@ -625,6 +689,7 @@ export default defineComponent({
       lineSize,
       lineColor,
       rubberStatus,
+      toggleStatus,
       draw,
       beginDrawing,
       stopDrawing,
