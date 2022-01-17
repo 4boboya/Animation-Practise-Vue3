@@ -259,7 +259,7 @@
       class="bg-gray-500 text-white w-full"
       style="width: 100%"
     >
-      grid test
+      grid template areas
     </button>
     <div id="col10" class="collapse-cont">
       <div class="grid-col10">
@@ -298,6 +298,30 @@
           <circle cx="200" cy="200" r="160"/>
         </g>
       </svg>
+      <svg class="stroke ani" style="margin-left: 20px" height="400" width="100%" >
+        <g>
+          <path d="M0 0 C13 1, 27 18, 0 20 V20 C30 21, 30 40, 0 40 Z"></path>
+          <circle cx="35" cy="30" r="10"/>
+          <path d="M50 0 C63 1, 77 18, 50 20 V20 C80 21, 80 40, 50 40 Z"></path>
+          <circle cx="85" cy="30" r="10"/>
+        </g>
+      </svg>
+    </div>
+    <button
+      v-collapse="'col12'"
+      class="bg-gray-300 text-white w-full"
+      style="width: 100%"
+    >
+      grid auto
+    </button>
+    <div id="col12" class="collapse-cont">
+      <div class="grid-auto">
+        <div class="grid-red-10 bg-red-200"></div>
+        <div class="grid-green-10 bg-green-200"></div>
+        <div class="grid-yellow-10 bg-yellow-200"></div>
+        <div class="grid-blue-10 bg-blue-200"></div>
+        <div class="grid-purple-10 bg-purple-200"></div>
+      </div>
     </div>
     <div v-draggable class="relative" style="height: 120px; z-index: 9999">
       <span class="spin_div_cont_2"> 我可以移動 </span>
@@ -316,6 +340,11 @@
 }
 </style>
 <style scoped>
+.grid-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 5fr));
+  min-height: 200px;
+}
 .stroke {
   stroke-dashoffset: 2000;
   stroke-dasharray: 2000;
@@ -325,7 +354,7 @@
 }
 
 .ani {
-  animation: circle-draw 10s linear infinite
+  animation: circle-draw 20s linear infinite
 }
 
 @keyframes circle-draw {
@@ -373,23 +402,23 @@
     ". . _red _red ."
     "_green . _yellow _yellow ."
     "_green . _yellow _yellow _blue"
-    ". _green . . _blue"
+    "_green . . . _blue"
     "_purple _purple . . _blue";
   background-color: transparent;
 }
-.grid-red10 {
+.grid-red-10 {
   grid-area: _red;
 }
-.grid-green10 {
+.grid-green-10 {
   grid-area: _green;
 }
-.grid-yellow10 {
+.grid-yellow-10 {
   grid-area: _yellow;
 }
-.grid-blue10 {
+.grid-blue-10 {
   grid-area: _blue;
 }
-.grid-purple10 {
+.grid-purple-10 {
   grid-area: _purple;
 }
 .grid-col8 {
