@@ -1190,7 +1190,7 @@ export default defineComponent({
     }
 
     const checkVer = () => {
-      if (inputVer.value == verify.value) {
+      if (inputVer.value.toLowerCase() == verify.value.toLowerCase()) {
         verMsg.value = 'pass'
       } else {
         verMsg.value = 'error'
