@@ -1021,7 +1021,7 @@ export default defineComponent({
       for (var i = 0; i <= n; i++) {
         const new_r = r + 2 * Math.sin(2 * Math.PI * i / 10 + time.value / 20)
         const deg = i * (360/n) * degToPI; //第i個角 * 間距(角度) * 每角度弧度
-        ctxT.value?.lineTo(new_r*Math.cos(deg), new_r*Math.sin(deg))
+        ctxT.value?.lineTo(new_r*Math.cos(deg), new_r*Math.sin(deg)) //x = 半徑*cosθ, y = 半徑*sinθ 極座標 <-> 一般座標 θ = atan2(y, x), 半徑 = (X^2+Y^2)^(1/2)
       }
       ctxT.value!.strokeStyle = "#FFF"; //邊框顏色
       ctxT.value?.stroke() //繪製邊框
