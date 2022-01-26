@@ -324,11 +324,24 @@
       class="bg-gray-400 text-white w-full"
       style="width: 100%"
     >
-      canvas clock test
+      canvas clock
     </button>
     <div id="col13" class="collapse-cont" style="background-color: #111111">
       <div class="now-time"> {{nowTime}} </div>
       <canvas :ref="(el) => { canvasRefT = el } " style="transform: scaleY(-1)"/> <!-- canvas 上下顛倒 -->
+    </div>
+    <button
+      v-collapse="'col14'"
+      class="bg-gray-500 text-white w-full"
+      style="width: 100%"
+    >
+      canvas verify
+    </button>
+    <div id="col14" class="collapse-cont">
+      <input v-model="inputVer"/> <button style="color: #DEDEDE" @click="checkVer()">submit</button> <button style="color: #DEDEDE" @click="drawVer()">change</button>
+      <div style="color: #DEDEDE">{{ verMsg }}</div>
+      
+      <canvas :ref="(el) => { canvasRefVer = el } "/>
     </div>
     <div v-draggable class="relative" style="height: 120px; z-index: 9999">
       <span class="spin_div_cont_2"> 我可以移動 </span>
@@ -901,8 +914,10 @@ export default defineComponent({
     const colorArray = [ "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", ];
     const canvasRef = ref<HTMLCanvasElement>();
     const canvasRefT = ref<HTMLCanvasElement>();
+    const canvasRefVer = ref<HTMLCanvasElement>();
     const ctx = ref<CanvasRenderingContext2D>();
     const ctxT = ref<CanvasRenderingContext2D>();
+    const ctxVer = ref<CanvasRenderingContext2D>();
     const drawing = ref<boolean>(false);
     const mouseX = ref<number>(0);
     const mouseY = ref<number>(0);
@@ -914,6 +929,9 @@ export default defineComponent({
     const nowTime = ref<string>("");
     const width = ref<number>(0);
     const interval = ref<number>();
+    const verify = ref<string>("");
+    const inputVer = ref<string>("");
+    const verMsg = ref<string>("");
 
     const tagSelect = reactive([
       { key: "stock" },
@@ -980,10 +998,10 @@ export default defineComponent({
     const stopDrawing = () => {
       drawing.value = false;
     };
-
     const claerCanvas = () => {
       canvasRef.value!.height = canvasRef.value!.height;
     };
+
     const setCanvasT = () => {
       const canvas = canvasRefT.value as HTMLCanvasElement;
       canvas.width = canvas.parentElement?.offsetWidth as number;
@@ -1101,7 +1119,6 @@ export default defineComponent({
 
       time.value += 1
     }
-
     const drawPointer = (r: number, deg: number, lineWidth: number) => {
       const degToPI = Math.PI*2/360;
       ctxT.value?.beginPath();
@@ -1117,6 +1134,69 @@ export default defineComponent({
       ctxT.value?.stroke() //繪製邊框
     }
 
+    const setCanvasVer = () => {
+      const canvas = canvasRefVer.value as HTMLCanvasElement;
+      canvas.width = 200;
+      canvas.height = 95;
+      ctxVer.value = canvas.getContext("2d") as CanvasRenderingContext2D;
+
+      drawVer();
+    }
+    const drawVer = () => {
+      ctxVer.value!.fillStyle = "#DEDEDE";
+      ctxVer.value!.beginPath(); //調整清除畫布的初始位置
+      ctxVer.value?.rect(-2000,-2000,4000,4000);
+      ctxVer.value?.fill();
+
+      for (var i = 0; i < 50; i++) {
+        ctxVer.value!.strokeStyle = randomRGB().toString();
+        ctxVer.value!.lineWidth = 1;
+        ctxVer.value?.beginPath();
+        ctxVer.value?.moveTo(randomX(), randomY());
+        ctxVer.value?.lineTo(randomX(), randomY());
+        ctxVer.value?.stroke();
+
+        if (i == 24) {
+          radomVerCode()
+          ctxVer.value!.fillStyle = `${randomRGB()}`
+          ctxVer.value!.font = "bold 60px Arial"
+          ctxVer.value!.fillText(verify.value, 25, 60)
+        }
+      }
+    }
+    const randomRGB = () => {
+      let rgb = "#"
+      for (var i = 0; i < 6; i++) {
+        const random = Math.floor(Math.random()*16)
+        rgb = `${rgb}${random.toString(16)}`
+      }
+      return rgb
+    }
+    const randomX = () => {
+      var ranLineX = Math. floor( Math. random() * 200);
+      return ranLineX;
+    }
+    const randomY = () => {
+      var ranLineY = Math. floor( Math. random() * 95);
+      return ranLineY;
+    }
+    const radomVerCode = () => {
+      verify.value = ''
+      const random = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z','A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']; 
+      for (var i = 0; i < 4; i++) {
+        const index = Math.floor(Math.random() * 62)
+        verify.value = `${verify.value}${random[index]}`
+      }
+    }
+
+    const checkVer = () => {
+      if (inputVer.value == verify.value) {
+        verMsg.value = 'pass'
+      } else {
+        verMsg.value = 'error'
+      }
+    }
+
     const windowWidth = () => {
       width.value = window.innerWidth
     }
@@ -1126,6 +1206,7 @@ export default defineComponent({
     onMounted(() => {
       setCanvas();
       setCanvasT();
+      setCanvasVer();
     });
 
     watch(
@@ -1147,11 +1228,14 @@ export default defineComponent({
       cube,
       canvasRef,
       canvasRefT,
+      canvasRefVer,
       lineSize,
       lineColor,
       rubberStatus,
       toggleStatus,
       nowTime,
+      inputVer,
+      verMsg,
       draw,
       beginDrawing,
       stopDrawing,
@@ -1159,6 +1243,8 @@ export default defineComponent({
       controlPanel,
       changeColor,
       claerCanvas,
+      drawVer,
+      checkVer,
     };
   },
 });
