@@ -188,11 +188,7 @@
         <button class="bg-gray-300" @click="claerCanvas">Clear</button>
       </div>
       <canvas
-        :ref="
-          (el) => {
-            canvasRef = el;
-          }
-        "
+        :ref="(el) => { canvasRef = el } "
         @mousemove="draw"
         @mousedown="beginDrawing"
         @mouseup="stopDrawing"
@@ -316,12 +312,23 @@
     </button>
     <div id="col12" class="collapse-cont">
       <div class="grid-auto">
-        <div class="grid-red-10 bg-red-200"></div>
-        <div class="grid-green-10 bg-green-200"></div>
-        <div class="grid-yellow-10 bg-yellow-200"></div>
-        <div class="grid-blue-10 bg-blue-200"></div>
-        <div class="grid-purple-10 bg-purple-200"></div>
+        <div class="bg-red-200"></div>
+        <div class="bg-green-200"></div>
+        <div class="bg-yellow-200"></div>
+        <div class="bg-blue-200"></div>
+        <div class="bg-purple-200"></div>
       </div>
+    </div>
+    <button
+      v-collapse="'col13'"
+      class="bg-gray-400 text-white w-full"
+      style="width: 100%"
+    >
+      canvas clock test
+    </button>
+    <div id="col13" class="collapse-cont" style="background-color: #111111">
+      <div class="now-time"> {{nowTime}} </div>
+      <canvas :ref="(el) => { canvasRefT = el } " style="transform: scaleY(-1)"/> <!-- canvas 上下顛倒 -->
     </div>
     <div v-draggable class="relative" style="height: 120px; z-index: 9999">
       <span class="spin_div_cont_2"> 我可以移動 </span>
@@ -340,6 +347,20 @@
 }
 </style>
 <style scoped>
+#col13 {
+  position: relative;
+}
+.now-time {
+  position: absolute;
+  background-color: #111111;
+  color: #DEDEDE;
+  font-weight: bold;
+  font-size: 24px;
+  z-index: 1;
+  left: 50%;
+  top: 140px;
+  transform: translateX(-50%);
+}
 .grid-auto {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(100px, 5fr));
@@ -866,7 +887,7 @@
 </style>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive, ref } from "vue";
+import { defineComponent, onMounted, reactive, ref, watch } from "vue";
 import { TagSelect } from "@/model/tag";
 export default defineComponent({
   setup() {
@@ -877,26 +898,11 @@ export default defineComponent({
     const openColl = ref<boolean>(false);
     const collCount = ref<number>(0);
     const cube = ref<boolean>(false);
-    const colorArray = [
-      "0",
-      "1",
-      "2",
-      "3",
-      "4",
-      "5",
-      "6",
-      "7",
-      "8",
-      "9",
-      "a",
-      "b",
-      "c",
-      "d",
-      "e",
-      "f",
-    ];
+    const colorArray = [ "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", ];
     const canvasRef = ref<HTMLCanvasElement>();
+    const canvasRefT = ref<HTMLCanvasElement>();
     const ctx = ref<CanvasRenderingContext2D>();
+    const ctxT = ref<CanvasRenderingContext2D>();
     const drawing = ref<boolean>(false);
     const mouseX = ref<number>(0);
     const mouseY = ref<number>(0);
@@ -904,6 +910,10 @@ export default defineComponent({
     const lineColor = ref<string>("#000000");
     const rubberStatus = ref<boolean>(false);
     const toggleStatus = ref<boolean>(false);
+    const time = ref<number>(0);
+    const nowTime = ref<string>("");
+    const width = ref<number>(0);
+    const interval = ref<number>();
 
     const tagSelect = reactive([
       { key: "stock" },
@@ -952,9 +962,7 @@ export default defineComponent({
     const draw = (e: MouseEvent) => {
       if (drawing.value) {
         ctx.value?.beginPath();
-        ctx.value!.strokeStyle = rubberStatus.value
-          ? "#1E3A8A"
-          : lineColor.value;
+        ctx.value!.strokeStyle = rubberStatus.value ? "#1E3A8A" : lineColor.value;
         ctx.value!.lineWidth = lineSize.value;
         ctx.value?.moveTo(mouseX.value, mouseY.value);
         ctx.value?.lineTo(e.offsetX, e.offsetY);
@@ -976,10 +984,157 @@ export default defineComponent({
     const claerCanvas = () => {
       canvasRef.value!.height = canvasRef.value!.height;
     };
+    const setCanvasT = () => {
+      const canvas = canvasRefT.value as HTMLCanvasElement;
+      canvas.width = canvas.parentElement?.offsetWidth as number;
+      canvas.height = 1000;
+      ctxT.value = canvas.getContext("2d") as CanvasRenderingContext2D;
+      ctxT.value?.restore();
+      ctxT.value?.translate(canvas.width/2, 500) //移動畫布
+
+      interval.value = setInterval(() => {
+        drawT(canvas.width);
+      }, 10)
+    };
+    const drawT = (ww: number) => {
+      // 清除背景，方形覆蓋
+      ctxT.value!.fillStyle = "#111";
+      ctxT.value!.beginPath(); //調整清除畫布的初始位置
+      ctxT.value?.rect(-2000,-2000,4000,4000);
+      ctxT.value?.fill();
+
+      ctxT.value!.strokeStyle = "rgba(255, 255, 255, 0.05)"; //邊框顏色
+      ctxT.value!.lineWidth = 1; //線條寬度
+      //坐標軸
+      ctxT.value?.moveTo(-ww/2, 0)
+      ctxT.value?.lineTo(ww/2, 0)
+      ctxT.value?.moveTo(0, -500)
+      ctxT.value?.lineTo(0, 500)
+      ctxT.value?.stroke() //繪製邊框
+      //弧線
+      var r = 200; //半徑
+      var n = 200; //點數量，足夠多就變圓
+      const degToPI = Math.PI*2/360; //弧度
+
+      ctxT.value!.beginPath(); //調整清除畫布的初始位置
+      // 繪製波浪圈
+      for (var i = 0; i <= n; i++) {
+        const new_r = r + 2 * Math.sin(2 * Math.PI * i / 10 + time.value / 20)
+        const deg = i * (360/n) * degToPI; //第i個角 * 間距(角度) * 每角度弧度
+        ctxT.value?.lineTo(new_r*Math.cos(deg), new_r*Math.sin(deg))
+      }
+      ctxT.value!.strokeStyle = "#FFF"; //邊框顏色
+      ctxT.value?.stroke() //繪製邊框
+
+      //繪製內圈
+      r = 230;
+      n = 300;
+      for (i = 0; i <= n; i++) {
+        const deg = i * (360/n) * degToPI; //第i個角 * 間距(角度) * 每角度弧度
+        const inset = i%75 == 0 ? -4 : 0; //內偏移 %75為0 3 6 9點 %25為 1 2 4 5 7 8 10 11點 %5為 每分鐘
+        const len = 4 + (i%5 == 0 ? 3 : 0) + (i%75 == 0 ? 4 : 0) +(i%25 == 0 ? 8: 0);
+        const opacity = len > 4 ? 1 : 0.7; // 透明度
+        const start = r+inset;
+        const end = r+inset+len
+        ctxT.value!.beginPath(); //調整清除畫布的初始位置
+        ctxT.value?.moveTo(start*Math.cos(deg), start*Math.sin(deg))
+        ctxT.value?.lineTo(end*Math.cos(deg), end*Math.sin(deg))
+        ctxT.value!.strokeStyle = `rgba(255, 255, 255, ${opacity})`; //邊框顏色
+        ctxT.value?.stroke() //繪製邊框
+      }
+
+
+      // 繪製外圈
+      r = 400;
+      n = 60;
+      for (i = 0; i <= n; i++) {
+        const deg = i * (360/n) * degToPI; //第i個角 * 間距(角度) * 每角度弧度
+        const inset = i%15 == 0 ? -4 : 0; //內偏移 %15為0 3 6 9點 %5為 1 2 4 5 7 8 10 11點
+        const len = 6 + (i%5 == 0 ? 4:  0) +(i%15 == 0 ? 8:  0);
+        const opacity = len > 4 ? 1 : 0.7; // 透明度
+        const start = r+inset;
+        const end = r+inset+len
+        ctxT.value!.beginPath(); //調整清除畫布的初始位置
+        ctxT.value?.moveTo(start*Math.cos(deg), start*Math.sin(deg))
+        ctxT.value?.lineTo(end*Math.cos(deg), end*Math.sin(deg))
+        ctxT.value!.strokeStyle = `rgba(255, 255, 255, ${opacity})`; //邊框顏色
+        ctxT.value?.stroke() //繪製邊框
+      }
+
+      const now = new Date();
+      const sec = now.getSeconds();
+      const min = now.getMinutes();
+      const hour = now.getHours();
+      nowTime.value = `${hour <= 9 ? `0${hour}` : hour}:${min <= 9 ? `0${min}` : min}:${sec <= 9 ? `0${sec}` : sec}`
+      drawPointer(400, -360 * ( (sec + now.getMilliseconds()/1000) / 60 ) , 1 );
+      drawPointer(270, -360 * ( (min) / 60 ) , 2 );
+      drawPointer(150, -360 * ( (hour + min / 60 ) / 12.0 ) , 4 );
+
+      //繪製外框
+      r = 300;
+      n = 240;
+      ctxT.value!.beginPath();
+      ctxT.value!.lineWidth=4;
+      for(i = 0 ; i <= n ; i++){
+        //將240個點平均分布在圓周上，加上一點點時間
+        const deg= 360 * (i / n) + time.value / 200;
+        //如果每180度以內餘數 > 90度
+        if ((deg % 180 ) < 90){
+          //如果成立就預設要畫
+          ctxT.value!.lineTo(
+            r * Math.cos(deg * degToPI),
+            r * Math.sin(deg * degToPI)
+          );
+        }else{
+          //不成立就只移動點，不繪製
+          ctxT.value!.moveTo(
+            r * Math.cos(deg * degToPI),
+            r * Math.sin(deg * degToPI)
+          );
+        }
+      }
+      
+      //設定樣式跟繪製
+      ctxT.value!.strokeStyle="#FFF";
+      //將剛剛預設要畫的都畫出來
+      ctxT.value!.stroke();
+
+      time.value += 1
+    }
+
+    const drawPointer = (r: number, deg: number, lineWidth: number) => {
+      const degToPI = Math.PI*2/360;
+      ctxT.value?.beginPath();
+      ctxT.value!.lineWidth = lineWidth;
+
+      const secDeg = deg + 90 // 時鐘往右轉
+      ctxT.value?.moveTo(0, 0)
+      ctxT.value?.lineTo(
+        r*0.8*Math.cos( secDeg * degToPI ),
+        r*0.8*Math.sin( secDeg * degToPI )
+      );
+
+      ctxT.value?.stroke() //繪製邊框
+    }
+
+    const windowWidth = () => {
+      width.value = window.innerWidth
+    }
+
+    window.addEventListener("resize", windowWidth);
 
     onMounted(() => {
       setCanvas();
+      setCanvasT();
     });
+
+    watch(
+      width,
+      (() => {
+        clearInterval(interval.value);
+        setCanvasT()
+      })
+    )
 
     return {
       tagSelect,
@@ -991,10 +1146,12 @@ export default defineComponent({
       collCount,
       cube,
       canvasRef,
+      canvasRefT,
       lineSize,
       lineColor,
       rubberStatus,
       toggleStatus,
+      nowTime,
       draw,
       beginDrawing,
       stopDrawing,
